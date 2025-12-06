@@ -9,31 +9,29 @@
 ")
 
 (define (parse s)
-  (let ([nums (map ints (lines s))]
-        [ops (regexp-match* #px"[*+]" (last (lines s)))])
-    (cons (map (λ (x) (if (string=? x "+") + *)) ops) (butlast nums))))
+  (let ([nums (butlast (lines s))]
+        [ops (map (λ (x) (if (string=? x "+") + *))
+                  (regexp-match* #px"[*+]" (last (lines s))))])
+    (values ops nums)))
 
 (define (part1 s)
-  (let ([input (parse s)])
-    (for/sum ([op (first input)]
-              [nums (transpose (cdr input))])
-      (apply op nums))))
+  (let-values ([(ops nums) (parse s)])
+    (for/sum ([op ops]
+              [num (transpose (map ints nums))])
+      (apply op num))))
 
 (define (part2 s)
-  (let* ([L (transpose (butlast (lines s)))]
-         [ops (map (λ (x) (if (string=? x "+") + *))
-                   (regexp-match* #px"[*+]" (last (lines s))))])
-    (let loop ([L L] [op ops] [cur '()])
+  (let-values ([(ops nums) (parse s)])
+    (let loop ([L (transpose nums)] [ops ops] [cur '()])
       (cond ((null? L)
-             (apply (first op) cur))
-            ((string=? (string-normalize-spaces (first L)) "")
-             (+ (apply (first op) cur)
-                (loop (cdr L) (cdr op) '())))
+             (apply (first ops) cur))
+            ((string=? (string-trim (first L)) "")
+             (+ (apply (first ops) cur)
+                (loop (cdr L) (cdr ops) '())))
             (else
-             (loop (cdr L) op (cons ((compose string->number
-                                              string-normalize-spaces)
-                                     (first L))
-                                    cur)))))))
+             (loop (cdr L) ops (cons ((compose string->number string-trim)
+                                      (first L))
+                                     cur)))))))
 
 (time
  (let ([input (file->string (format "~a.txt" day))])
