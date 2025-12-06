@@ -34,5 +34,4 @@ L82")
                 (+ end-on-zero (if (zero? npos) 1 0))
                 (+ passed-zero passed (quotient (abs n) 100)))))))
 
-((compose run file->string) (format "~a.txt" day))
 (time (run (file->string (format "~a.txt" day))))
