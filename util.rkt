@@ -147,6 +147,12 @@ every value is #f. Use it to see which cells have been visited."
   (for/vector ([_ (vector-length G)])
     (make-vector (vector-length (vector-ref G 0)) #f)))
 
+(define (make-seen0 G)
+  "Given 2d vector G, make a new grid of the same dimensions where
+every value is 0. Use it to see how many times a cell has been visited."
+  (for/vector ([_ (vector-length G)])
+    (make-vector (vector-length (vector-ref G 0)) 0)))
+
 (define (rr G)
   (vector-length G))
 

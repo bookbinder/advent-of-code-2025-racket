@@ -17,21 +17,22 @@
 (define (part1 s)
   (let-values ([(ops nums) (parse s)])
     (for/sum ([op ops]
-              [t-nums (transpose (map ints nums))])
-      (apply op t-nums))))
+              [row (transpose (map ints nums))])
+      (apply op row))))
 
 (define (part2 s)
   (let-values ([(ops nums) (parse s)])
     (let loop ([L (transpose nums)] [ops ops] [cur '()])
-      (cond ((null? L)
-             (apply (first ops) cur))
-            ((string=? (string-trim (first L)) "")
-             (+ (apply (first ops) cur)
-                (loop (cdr L) (cdr ops) '())))
-            (else
-             (loop (cdr L) ops (cons ((compose string->number string-trim)
-                                      (first L))
-                                     cur)))))))
+      (cond
+        ((null? L)
+         (apply (first ops) cur))
+        ((string=? (string-trim (first L)) "")
+         (+ (apply (first ops) cur)
+            (loop (cdr L) (cdr ops) '())))
+        (else
+         (loop (cdr L) ops (cons ((compose string->number string-trim)
+                                  (first L))
+                                 cur)))))))
 
 (time
  (let ([input (file->string (format "~a.txt" day))])
@@ -44,3 +45,5 @@
                  (part2 input)
                  ))
    ))
+
+
