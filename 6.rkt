@@ -9,16 +9,16 @@
 ")
 
 (define (parse s)
-  (let ([nums (butlast (lines s))]
-        [ops (map (λ (x) (if (string=? x "+") + *))
-                  (regexp-match* #px"[*+]" (last (lines s))))])
+  (let*-values ([(nums ops) (split-at-right (lines s) 1)]
+                [(ops) (map (λ (x) (if (string=? x "+") + *))
+                            (regexp-match* #px"[*+]" (first ops)))])
     (values ops nums)))
 
 (define (part1 s)
   (let-values ([(ops nums) (parse s)])
     (for/sum ([op ops]
-              [num (transpose (map ints nums))])
-      (apply op num))))
+              [t-nums (transpose (map ints nums))])
+      (apply op t-nums))))
 
 (define (part2 s)
   (let-values ([(ops nums) (parse s)])

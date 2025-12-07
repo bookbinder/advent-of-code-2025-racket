@@ -30,23 +30,22 @@
                             (make-list (quotient (string-length s) f) ss))])
             (not (string=? ss s)))))))
 
-(define (run s)
+(define (run s fn)
   (let ([ranges (parse s)])
-    (λ (fn)
-      (for*/sum ([x ranges]
-                 [y (in-range (first x) (add1 (second x)))])
-        (if (fn y) 0 y)))))
+    (for*/sum ([x ranges]
+               [y (in-range (first x) (add1 (second x)))])
+      (if (fn y) 0 y))))
 
 (time
  (let ([input (file->string (format "~a.txt" day))])
    (printf "Part 1: ~a\n"
            (list
-            ((run ex1) valid-id?)
-            ((run input) valid-id?)
+            (run ex1 valid-id?)
+            (run input valid-id?)
             ))
    (printf "Part 2: ~a\n"
            (list
-            ((run ex1) valid-id2?)
-            ((run input) valid-id2?)
+            (run ex1 valid-id2?)
+            (run input valid-id2?)
             ))
    ))
