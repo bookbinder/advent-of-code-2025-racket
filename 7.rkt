@@ -26,10 +26,9 @@
 
 (define (neis G pt)
   "Get neighbors of PT in G, depending on whether PT is a splitter."
-  (if (char=? (get2 G pt) #\^)
-      (filter (in-bounds? G)
-              (list (map + pt '(0 -1)) (map + pt '(0 1))))
-      (filter (in-bounds? G)
+  (filter (in-bounds? G)
+          (if (char=? (get2 G pt) #\^)
+              (list (map + pt '(0 -1)) (map + pt '(0 1)))
               (list (map + pt '(1 0))))))
 
 (define (simul G start)
