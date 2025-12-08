@@ -1,5 +1,4 @@
 #lang racket
-(require memo)
 (require "util.rkt")
 
 (define day "7")
@@ -31,12 +30,12 @@
               (list (map + pt '(0 -1)) (map + pt '(0 1)))
               (list (map + pt '(1 0))))))
 
-(define (simul G start)
+(define (part1 s)
   "For part 1, count the number of times we hit a splitter."
-  (let ([seen (make-seen G)]
-        [res 0])
-    (set2! seen start #t)
-    (let loop ([pt start])
+  (let* ([G (parse s)]
+         [seen (make-seen G)]
+         [res 0])
+    (let loop ([pt (find-in-G G #\S)])
       (when (char=? (get2 G pt) #\^)
         (set! res (add1 res)))
       (for ([n (neis G pt)])
@@ -45,22 +44,19 @@
           (loop n))))
     res))
 
-(define (part1 s)
-  (let* ([G (parse s)]
-         [start (find-in-G G #\S)])
-    (simul G start)))
-
 (define (part2 s)
+  "For part 2, count total possible paths."
   (let* ([G (parse s)]
-         [start (find-in-G G #\S)])
-
-    (define/memoize (simul2 pt) #:hash hash
-      (if (= (first pt) (sub1 (rr G)))
-          (if (char=? (get2 G pt) #\^) 2 1)
-          (for/sum ([n (neis G pt)])
-            (simul2 n))))    
-
-    (simul2 start)))
+         [seen (make-seen G)])
+    (let loop ([pt (find-in-G G #\S)])
+      (or (get2 seen pt)
+          (begin
+            (set2! seen pt
+                   (if (= (first pt) (sub1 (rr G)))
+                       (if (char=? (get2 G pt) #\^) 2 1)
+                       (for/sum ([n (neis G pt)])
+                         (loop n))))
+            (get2 seen pt))))))
 
 (time
  (let ([input (file->string (format "~a.txt" day))])
