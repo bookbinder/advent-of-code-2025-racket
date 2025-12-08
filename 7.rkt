@@ -51,11 +51,8 @@
     (let loop ([pt (find-in-G G #\S)])
       (or (get2 seen pt)
           (begin
-            (set2! seen pt
-                   (if (= (first pt) (sub1 (rr G)))
-                       (if (char=? (get2 G pt) #\^) 2 1)
-                       (for/sum ([n (neis G pt)])
-                         (loop n))))
+            (set2! seen pt (max (for/sum ([n (neis G pt)]) (loop n))
+                                1))
             (get2 seen pt))))))
 
 (time
