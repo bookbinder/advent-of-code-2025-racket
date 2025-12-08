@@ -113,14 +113,17 @@ by '\n'"
 (define dirs8 (append dirs4 diagonals))
 
 ;; Getters and setters for 2d and 3d vector-grids
+;; Note that the setters return the value that was set
 (define (get2 G pt)
   (vector-ref (vector-ref G (first pt)) (second pt)))
 (define (set2! G pt val)
-  (vector-set! (vector-ref G (first pt)) (second pt) val))
+  (vector-set! (vector-ref G (first pt)) (second pt) val)
+  (vector-ref (vector-ref G (first pt)) (second pt)))
 (define (get3 G r c n)
   (vector-ref (vector-ref (vector-ref G r) c) n))
 (define (set3! G r c n val)
-  (vector-set! (vector-ref (vector-ref G r) c) n val))
+  (vector-set! (vector-ref (vector-ref G r) c) n val)
+  (vector-ref (vector-ref (vector-ref G r) c) n))
 
 (define (in-bounds? G)
   (λ (pt)

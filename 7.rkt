@@ -1,4 +1,5 @@
 #lang racket
+(require memo)
 (require "util.rkt")
 
 (define day "7")
@@ -46,14 +47,21 @@
 
 (define (part2 s)
   "For part 2, count total possible paths."
-  (let* ([G (parse s)]
-         [seen (make-seen G)])
-    (let loop ([pt (find-in-G G #\S)])
-      (or (get2 seen pt)
-          (begin
-            (set2! seen pt (max (for/sum ([n (neis G pt)]) (loop n))
-                                1))
-            (get2 seen pt))))))
+  (let* ([G (parse s)])
+    (define/memoize (run pt) #:hash hash
+      (max (sum (map run (neis G pt)))
+           1))
+    (run (find-in-G G #\S))))
+
+;;;; a little faster
+;; (define (part2alt s)
+;;   "For part 2, count total possible paths."
+;;   (let* ([G (parse s)]
+;;          [seen (make-seen G)])
+;;     (let loop ([pt (find-in-G G #\S)])
+;;       (or (get2 seen pt)
+;;           (set2! seen pt (max (sum (map loop (neis G pt)))
+;;                               1))))))
 
 (time
  (let ([input (file->string (format "~a.txt" day))])
