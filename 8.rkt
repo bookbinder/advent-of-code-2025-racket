@@ -34,7 +34,6 @@
       (expt (abs (- (third a) (third b))) 2))))
 
 (define (dist-dict L)
-  "Make a dictionary of distances between each pair of pts in L."
   (let ([D (make-hash)])
     (let loop ([L1 L])
       (unless (null? L1)
@@ -50,8 +49,10 @@
 (define (run s part1? [example? #f])
   (let* ([input (parse s)]
          [D (dist-dict input)]
-         [D2 (for/list ([k (hash-keys D)])
-               (list k (hash-ref D k)))]
+         [D2 (let ([tmp (for/list ([k (hash-keys D)])
+                          (list k (hash-ref D k)))])
+               (sort tmp (λ (a b) (< (second a) (second b))))
+               )]
          [sets-D (let ([tmp (make-hash)])
                    (for ([x input])
                      (hash-set! tmp x x))
@@ -60,7 +61,7 @@
                    (for ([x input])
                      (hash-set! tmp x 1))
                    tmp)]
-         [components (length input)])
+         [num-compon (length input)])
 
     (define (find x)
       (let ([parent (if (equal? x (hash-ref sets-D x))
@@ -85,19 +86,20 @@
                  (hash-update! sizes (hash-ref sets-D rooty)
                                (λ (val) (+ val (hash-ref sizes rootx))))
                  (hash-set! sets-D rootx rooty)))
-          (set! components (sub1 components)))))
+          (set! num-compon (sub1 num-compon)))))
     
     (let/cc ret
       (for ([x D2]
             [_ (if (and part1? example?)
                    10
-                   (if part1? 1000 (in-naturals)))])
+                   (if part1?
+                       1000
+                       (in-naturals)))])
         (let ([a (first (first x))]
               [b (second (first x))])
           (union a b)
-          (when (= 1 components)
+          (when (= 1 num-compon)
             (ret (* (first a) (first b))))))
-      (sort (hash-values sizes) >)
       (apply * (take (sort (hash-values sizes) >) 3)))))
 
 (time
