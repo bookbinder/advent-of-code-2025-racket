@@ -53,16 +53,6 @@
            1))
     (run (find-in-G G #\S))))
 
-;;;; a little faster
-;; (define (part2alt s)
-;;   "For part 2, count total possible paths."
-;;   (let* ([G (parse s)]
-;;          [seen (make-seen G)])
-;;     (let loop ([pt (find-in-G G #\S)])
-;;       (or (get2 seen pt)
-;;           (set2! seen pt (max (sum (map loop (neis G pt)))
-;;                               1))))))
-
 (time
  (let ([input (file->string (format "~a.txt" day))])
    (printf "Part 1: ~a\n"
