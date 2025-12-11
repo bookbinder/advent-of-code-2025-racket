@@ -1,5 +1,6 @@
 #lang racket
 (require "util.rkt")
+(require memo)
 
 (define day "11")
 (define ex1 "aaa: you hhh
@@ -43,28 +44,24 @@ hhh: out")
             (loop n))))))
 
 (define (part2 s)
-  (let ([adj (parse s)]
-        [cache (make-hash)])
-    (let loop ([node "svr"] [dac? #f] [fft? #f])
-      (or (hash-ref cache (list node dac? fft?) #f)
-          (begin
-            (hash-set! cache (list node dac? fft?)
-                       (if (equal? (hash-ref adj node) (list "out"))
-                           (if (and dac? fft?)
-                               1
-                               0)
-                           (for/sum ([n (hash-ref adj node)])
-                             (loop n
-                                   (if (string=? n "dac") #t dac?)
-                                   (if (string=? n "fft") #t fft?)))))
-            (hash-ref cache (list node dac? fft?)))))))
+  (let ([adj (parse s)])
+    
+    (define/memoize (solve node dac? fft?)
+      (if (equal? (hash-ref adj node) (list "out"))
+          (if (and dac? fft?) 1 0)
+          (for/sum ([n (hash-ref adj node)])
+            (solve n
+                   (if (string=? n "dac") #t dac?)
+                   (if (string=? n "fft") #t fft?)))))
+
+    (solve "svr" #f #f)))
 
 (time
  (let ([input (file->string (format "~a.txt" day))])
-   ;; (printf "Part 1: ~a\n"
-   ;;         (list (part1 ex1)
-   ;;               (part1 input)
-   ;;               ))
+   (printf "Part 1: ~a\n"
+           (list (part1 ex1)
+                 (part1 input)
+                 ))
    (printf "Part 2: ~a\n"
            (list (part2 ex2)
                  (part2 input)
